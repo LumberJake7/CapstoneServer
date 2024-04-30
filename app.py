@@ -9,18 +9,19 @@ import os
 
 def create_app(config_object='config_module.ConfigClass'):
     app = Flask(__name__)
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
+    app.config.from_object(config_object) 
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('SQLALCHEMY_DATABASE_URI')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.config["SQLALCHEMY_ECHO"] = True
     app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev_secret_key') 
-    app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
-
-
-
     app.config['SESSION_COOKIE_SECURE'] = True
     app.config['REMEMBER_COOKIE_SECURE'] = True
 
-    toolbar = DebugToolbarExtension(app)
+    if app.config['ENV'] == 'development':
+        app.config['SQLALCHEMY_ECHO'] = True
+        app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
+        toolbar = DebugToolbarExtension(app)
+        
+        
     API_KEY = os.environ.get('API_KEY', '0a6d6c9f43cc45f4a8ac20b49d8d36fd')
 
     connect_db(app)
@@ -185,6 +186,10 @@ def create_app(config_object='config_module.ConfigClass'):
         return "Failed to retrieve recipe details", 404
 
     return app
+
+if __name__ == "__main__":
+    port = int(os.environ.get('PORT', 5000))  # Default to 5000 if PORT not set
+    app.run(host='0.0.0.0', port=port)
 
 
 
