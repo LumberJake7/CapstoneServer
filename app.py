@@ -7,22 +7,22 @@ from flask_bcrypt import check_password_hash
 import requests
 import os
 
-def create_app(config_object='config_module.ConfigClass'):
+def create_app():
     app = Flask(__name__)
-    app.config.from_object(config_object) 
+    
+    # Directly configuring the app from environment variables or default values
     app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('SQLALCHEMY_DATABASE_URI')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev_secret_key') 
+    app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev_secret_key')
     app.config['SESSION_COOKIE_SECURE'] = True
     app.config['REMEMBER_COOKIE_SECURE'] = True
+    app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
+    app.config['SQLALCHEMY_ECHO'] = os.getenv('SQLALCHEMY_ECHO', 'False') == 'True'
 
     if app.config['ENV'] == 'development':
-        app.config['SQLALCHEMY_ECHO'] = True
-        app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
         toolbar = DebugToolbarExtension(app)
-        
-        
-    API_KEY = os.environ.get('API_KEY', '0a6d6c9f43cc45f4a8ac20b49d8d36fd')
+
+    API_KEY = os.getenv('API_KEY', '0a6d6c9f43cc45f4a8ac20b49d8d36fd')
 
     connect_db(app)
     
