@@ -3,8 +3,6 @@ This project showcases my proficiency in utilizing databases, integrating APIs, 
 
 Further enhancing the user experience, the website provides detailed information on each recipe, including the necessary equipment and step-by-step cooking instructions, ensuring users have all they need to start cooking right away. For those who find recipes worth revisiting, there's the option to add them to "My Menu" – a personalized collection of favored recipes. This feature allows users to easily access their curated selections at any time, streamlining the meal preparation process.
 
-
-
 Features
 User Authentication System: Allows users to sign up, log in, and log out securely. Utilizes Flask-WTF for forms, Flask-Bcrypt for password hashing.
 Dynamic Recipe Management: Users can create, update, and delete recipes from their personal menus.
@@ -19,3 +17,5 @@ Flask-SQLAlchemy - Database ORM
 Flask-Bcrypt - For password hashing
 JavaScript - Used for dynamic interactions on the client side
 Spoonacular API - For fetching recipe data
+
+Server Link
