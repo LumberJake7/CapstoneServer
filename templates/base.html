@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}MyMenu{% endblock %}</title>
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+      integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='styles.css') }}"
+    />
+  </head>
+  <body style="background-color: rgb(205, 168, 130)">
+    <header>
+      <nav>
+        <ul>
+          {% if 'user_id' not in session %}
+          <li><a href="/">Home</a></li>
+          {% endif %}
+          <li><a href="/search/ingredients">Recipe Lookup</a></li>
+          {% if 'user_id' in session %}
+          <li><a href="/logout">LogOut</a></li>
+          <li><a href="/users/{{ session['user_id'] }}">Profile</a></li>
+          <li>Welcome, {{ session['displayname'] }}</li>
+          {% else %}
+          <li><a href="/login">Login</a></li>
+          <li><a href="/signup">SignUp</a></li>
+          {% endif %}
+        </ul>
+      </nav>
+    </header>
+    <footer>
+      <div class="footer-content">
+        <h3>
+          Powered by Spoonacular
+          <img
+            src="https://play-lh.googleusercontent.com/uOZlIZUJ7R79qs_J_a9cdxrJaGhHwqKTmika25Lp1vTeC1qe9lPQF5jalEFc8Htk7nQ"
+            alt="spoonacular logo"
+            class="logo"
+          />
+        </h3>
+      </div>
+    </footer>
+
+    <main>{% block content %}{% endblock %}</main>
+  </body>
+</html>

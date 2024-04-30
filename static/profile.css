@@ -1,0 +1,62 @@
+h1 {
+  font-family: 'Courier New', monospace;
+  color: #f3eee8;
+  text-shadow: 2px 2px 4px #000000;
+}
+
+h2 {
+  text-align: center;
+  font-family: 'Courier New', monospace;
+  color: #f3eee8;
+  text-shadow: 2px 2px 4px #000000;
+  justify-content: center;
+}
+
+.recipe {
+  width: 30%;
+  margin: 0 auto 20px;
+  text-align: center;
+  background-color: rgb(138, 51, 36);
+  padding: 10px;
+  border-radius: 10px;
+  box-sizing: border-box;
+  display: inline-block;
+}
+
+.recipe h5 {
+  color: gold;
+  font-family: 'Courier New', monospace;
+  margin-top: 10px;
+  text-shadow: 2px 2px 4px #000000;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+
+.recipe img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 5px;
+}
+
+.recipe-details-link {
+  text-decoration: none;
+}
+
+.recipe-details-link:hover {
+  text-decoration: underline;
+}
+
+.remove-from-menu-btn {
+  background-color: #dc3545;
+}
+
+.remove-from-menu-btn:hover {
+  background-color: #c82333;
+}
+
+#search-results {
+  width: 70%;
+  margin-top: 20px;
+  float: right;
+  text-align: center;
+}

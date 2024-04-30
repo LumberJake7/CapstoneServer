@@ -1,0 +1,25 @@
+{% extends 'base.html' %} 
+{% block content %}
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ category }}">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+<form method="POST">
+  {{ form.hidden_tag() }} 
+  {% for field in form if field.widget.input_type != 'hidden' %}
+  <div class="form-group">
+    {{ field.label }}
+    {{ field(class_="form-control", style="width: 300px;") }} 
+    {% for error in field.errors %}
+    <span class="form-text text-danger">{{ error }}</span>
+    {% endfor %}
+  </div>
+  {% endfor %}
+  <button class="btn btn-success" type="submit">Register</button>
+</form>
+<link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
+
+{% endblock %}
