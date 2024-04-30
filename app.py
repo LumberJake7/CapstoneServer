@@ -2,7 +2,7 @@ from flask import Flask, request, render_template, redirect, flash, session, url
 from flask_debugtoolbar import DebugToolbarExtension
 from models import User, db, connect_db, Menu
 from forms import LoginUserForm, SignupUserForm
-from sqlalchemy.exc as IntegrityError
+from sqlalchemy.exc import IntegrityError
 from flask_bcrypt import check_password_hash
 import requests
 import os
