@@ -6,6 +6,7 @@ from sqlalchemy.exc import IntegrityError
 from flask_bcrypt import check_password_hash
 import requests
 import os
+import json
 
 def create_app():
     app = Flask(__name__)
@@ -20,21 +21,20 @@ def create_app():
     app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
     app.config['SQLALCHEMY_ECHO'] = os.getenv('SQLALCHEMY_ECHO', 'False') == 'True'
 
-    # Conditionally enable the Debug Toolbar in development environment
-    if app.config['ENV'] == 'development':
-        toolbar = DebugToolbarExtension(app)
+    
+    
 
-    API_KEY = os.getenv('API_KEY', '0a6d6c9f43cc45f4a8ac20b49d8d36fd')
+    API_KEY = os.getenv('API_KEY', '6d859dba9cc94ca3bf34c7246ca475f3')
 
     connect_db(app)
     
     @app.route('/')
     def homepage():
-        # Check if user is logged in
+
         if 'user_id' in session:
             return redirect(url_for('ingredient_search'))  # Redirect to the search ingredients route
 
-        # Normal homepage logic for visitors who are not logged in
+
         recipe_ids = [795614, 715544, 754183]
         recipe_data = {}
 
