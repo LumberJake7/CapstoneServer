@@ -2,7 +2,7 @@ from flask import Flask, request, render_template, redirect, flash, session, url
 from flask_debugtoolbar import DebugToolbarExtension
 from models import User, db, connect_db, Menu
 from forms import LoginUserForm, SignupUserForm
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc as IntegrityError
 from flask_bcrypt import check_password_hash
 import requests
 import os
@@ -10,15 +10,17 @@ import os
 def create_app():
     app = Flask(__name__)
     
-    # Directly configuring the app from environment variables or default values
+    # Set environment-specific configurations
+    app.config['ENV'] = os.getenv('FLASK_ENV', 'production')
     app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('SQLALCHEMY_DATABASE_URI')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev_secret_key')
-    app.config['SESSION_COOKIE_SECURE'] = True
-    app.config['REMEMBER_COOKIE_SECURE'] = True
+    app.config['SESSION_COOKIE_SECURE'] = app.config['ENV'] == 'production'
+    app.config['REMEMBER_COOKIE_SECURE'] = app.config['ENV'] == 'production'
     app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
     app.config['SQLALCHEMY_ECHO'] = os.getenv('SQLALCHEMY_ECHO', 'False') == 'True'
 
+    # Conditionally enable the Debug Toolbar in development environment
     if app.config['ENV'] == 'development':
         toolbar = DebugToolbarExtension(app)
 
