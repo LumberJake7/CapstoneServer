@@ -6,7 +6,6 @@ from sqlalchemy.exc import IntegrityError
 from flask_bcrypt import check_password_hash
 import requests
 import os
-import json
 
 def create_app():
     app = Flask(__name__)
@@ -21,8 +20,9 @@ def create_app():
     app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
     app.config['SQLALCHEMY_ECHO'] = os.getenv('SQLALCHEMY_ECHO', 'False') == 'True'
 
-    
-    
+
+    if app.config['ENV'] == 'development':
+        toolbar = DebugToolbarExtension(app)
 
     API_KEY = os.getenv('API_KEY', '6d859dba9cc94ca3bf34c7246ca475f3')
 
