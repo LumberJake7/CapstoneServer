@@ -15,7 +15,7 @@ def create_app(config_object='config_module.ConfigClass'):
     app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev_secret_key') 
     app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 
-# postgres://menu_kw91_user:fokr6lCZQzFKKEHQO1UwpSiZ2n3R55Ck@dpg-coodvpuv3ddc738mb54g-a.oregon-postgres.render.com/menu_kw91
+
 
     app.config['SESSION_COOKIE_SECURE'] = True
     app.config['REMEMBER_COOKIE_SECURE'] = True
@@ -187,8 +187,4 @@ def create_app(config_object='config_module.ConfigClass'):
     return app
 
 
-if __name__ == '__main__':
-    app = create_app()
-    with app.app_context():
-        db.create_all()  # Typically you would not automatically create/drop tables in production
-    app.run()
+
