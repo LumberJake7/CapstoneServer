@@ -24,7 +24,7 @@ def create_app():
     if app.config['ENV'] == 'development':
         toolbar = DebugToolbarExtension(app)
 
-    API_KEY = os.getenv('API_KEY', '6d859dba9cc94ca3bf34c7246ca475f3')
+    API_KEY = os.getenv('API_KEY')
 
     connect_db(app)
     
