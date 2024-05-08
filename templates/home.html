@@ -1,22 +1,20 @@
-{% extends 'base.html' %}
-{% block content %}
+{% extends 'base.html' %} {% block content %}
 <div class="container">
-    <h1>Login to get access to some amazing recipes like these ones!</h1>
+  <h1>Login to get access to some amazing recipes like these ones!</h1>
 
-    <h2>{{test2}}</h2>
-    <div class="display_recipes">
-        {% if recipe_data %}
-            {% for recipe_id, recipe_info in recipe_data.items() %}
-            <div class="display_recipe">
-                <h5>{{ recipe_info['title'] }}</h5>
-                <img src="{{ recipe_info['image'] }}" alt="{{ recipe_info['title'] }}">
-                <a href="/search/details/{{ recipe_info['id'] }}">View Details</a> 
-            </div>
-            {% endfor %}
-        {% else %}
-            <p>No recipes to display.</p>
-        {% endif %}
+  <div class="display_recipes">
+    {% if recipe_data %} {% for recipe_id, recipe_info in recipe_data.items() %}
+    <div class="display_recipe">
+      <h5>{{ recipe_info['title'] }}</h5>
+      <img src="{{ recipe_info['image'] }}" alt="{{ recipe_info['title'] }}" />
+      <a href="/search/details/{{ recipe_info['id'] }}">View Details</a>
     </div>
+    {% endfor %} {% elif error_message %}
+    <p>{{ error_message }}</p>
+    {% else %}
+    <p>No recipes to display.</p>
+    {% endif %}
+  </div>
 </div>
-<link rel="stylesheet" href="{{ url_for('static', filename='home.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='home.css') }}" />
 {% endblock %}

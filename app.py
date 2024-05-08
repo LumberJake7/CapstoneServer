@@ -27,23 +27,29 @@ def create_app():
     API_KEY = os.getenv('API_KEY')
 
     connect_db(app)
-    
+        
     @app.route('/')
     def homepage():
-
         if 'user_id' in session:
-            return redirect(url_for('ingredient_search'))  # Redirect to the search ingredients route
-
+            return redirect(url_for('ingredient_search'))
 
         recipe_ids = [795614, 715544, 754183]
         recipe_data = {}
+        error_message = None  # Initialize error message
 
         for recipe_id in recipe_ids:
             recipe_url = f'https://api.spoonacular.com/recipes/{recipe_id}/information?apiKey={API_KEY}'
             response = requests.get(recipe_url)
-            recipe_data[recipe_id] = response.json()
-        
-        return render_template('home.html', recipe_data=recipe_data)
+            if response.status_code == 200:
+                recipe_data[recipe_id] = response.json()
+            else:
+                print(f"Failed to fetch data for recipe {recipe_id}: Status Code {response.status_code}")
+                error_message = "Unable to retrieve recipes at this time due to API limitations."
+
+        if not recipe_data:
+            return render_template('home.html', error_message=error_message)
+        else:
+            return render_template('home.html', recipe_data=recipe_data)
 
 
     @app.route("/login", methods=["GET", "POST"])
@@ -67,7 +73,7 @@ def create_app():
         if form.validate_on_submit():
             if User.query.filter_by(username=form.username.data).first():
                 flash('Username taken. Please pick another', 'error')
-                return render_template('signup.html', form=form)
+                return redirect(url_for('sign_up'))  # Redirect to clear POST data
             try:
                 new_user = User.register(form.username.data, form.displayname.data, form.password.data)
                 db.session.add(new_user)
@@ -153,7 +159,8 @@ def create_app():
                 api_url = f'https://api.spoonacular.com/recipes/findByIngredients?apiKey={API_KEY}&ingredients={ingredients_str}&number=5&ignorePantry={ignore_pantry}'
                 response = requests.get(api_url)
                 results = response.json()
-                filtered_results = [recipe for recipe in results if recipe['title'] not in ['Beverages', 'Smoothies']]
+                filtered_results = results
+                # [recipe for recipe in results if recipe['title'] not in ['Beverages', 'Smoothies']]
                 return render_template('search/ingredients.html', results=filtered_results)
         return render_template('search/ingredients.html')
 
