@@ -18,4 +18,5 @@ Flask-Bcrypt - For password hashing
 JavaScript - Used for dynamic interactions on the client side
 Spoonacular API - For fetching recipe data
 
-Server Link
+Server Link:
+https://capstoneserver-1.onrender.com/

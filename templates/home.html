@@ -1,7 +1,6 @@
 {% extends 'base.html' %} {% block content %}
 <div class="container">
   <h1>Login to get access to some amazing recipes like these ones!</h1>
-
   <div class="display_recipes">
     {% if recipe_data %} {% for recipe_id, recipe_info in recipe_data.items() %}
     <div class="display_recipe">

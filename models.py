@@ -1,5 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
+from wtforms import PasswordField
+from wtforms.validators import DataRequired, Length
 
 bcrypt = Bcrypt()
 db = SQLAlchemy()
@@ -12,10 +14,10 @@ class User(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), nullable=False, unique=True)
-    password = db.Column(db.String(100), nullable=False)
+    password = db.Column(db.String(8), nullable=False)  
     displayname = db.Column(db.String(100), nullable=False)
-    menu = db.relationship('Menu', backref='user', uselist=False)
-    
+    menu = db.relationship('Menu', backref='user', lazy=True)
+
     @classmethod
     def register(cls, username, displayname, password):
         hashed_pwd = bcrypt.generate_password_hash(password).decode('UTF-8')
@@ -34,4 +36,4 @@ class Menu(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
-    recipe_id = db.Column(db.Integer)
+    recipe_id = db.Column(db.Integer, nullable=False)
