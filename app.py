@@ -11,13 +11,13 @@ def create_app(config_object='config_module.ConfigClass'):
     app = Flask(__name__)
 
     # Load environment variables
-    database_uri = os.environ.get('DATABASE_URI', 'postgresql://localhost/defaultdb')
-    api_key = os.environ.get('SPOONACULAR_API_KEY', 'default_api_key')
+    database_uri = os.environ.get('SQLALCHEMY_DATABASE_URI', 'postgresql://localhost/defaultdb')
+    api_key = os.environ.get('API_KEY', 'default_api_key')
     secret_key = os.environ.get('SECRET_KEY', 'dev_secret_key')
 
     app.config['SQLALCHEMY_DATABASE_URI'] = database_uri
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.config["SQLALCHEMY_ECHO"] = True
+    app.config["SQLALCHEMY_ECHO"] = os.environ.get('SQLALCHEMY_ECHO', 'False').lower() in ['true', '1', 'yes']
     app.config['SECRET_KEY'] = secret_key
     app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
     app.config['SESSION_COOKIE_SECURE'] = True
@@ -26,6 +26,7 @@ def create_app(config_object='config_module.ConfigClass'):
     toolbar = DebugToolbarExtension(app)
     connect_db(app)
 
+    # Import and register blueprints
     from routes.auth import auth as auth_blueprint
     app.register_blueprint(auth_blueprint)
 
