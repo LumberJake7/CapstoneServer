@@ -1,5 +1,3 @@
-# routes/auth.py
-
 from flask import Blueprint, render_template, redirect, url_for, flash, session
 from sqlalchemy.exc import IntegrityError
 from models import User, db, Menu
@@ -28,7 +26,6 @@ def login():
 
     return render_template("login.html", form=form)
 
-
 @auth.route('/signup', methods=['GET', 'POST'])
 def sign_up():
     form = SignupUserForm()
@@ -38,35 +35,35 @@ def sign_up():
         displayname = form.displayname.data
         password = form.password.data
 
-        # Check if the username already exists
-        if User.query.filter_by(username=username).first():
-            flash('Username taken. Please pick another', 'signup')
-            return render_template('signup.html', form=form)
-
+        user = User.register(username, displayname, password)
+        db.session.add(user)
         try:
-            new_user = User.register(username, displayname, password)
-            db.session.add(new_user)
             db.session.commit()
-
-            new_menu = Menu(user_id=new_user.id)
-            db.session.add(new_menu)
-            db.session.commit()
-
-            session['user_id'] = new_user.id
-            session['displayname'] = displayname
-            flash('Registration successful!', 'success')
-            return redirect('/')
-        except IntegrityError:
+            flash('Account created successfully!', 'success')
+            session['user_id'] = user.id
+            
+            # Add a sample recipe to the user's menu (assuming 12345 is a valid recipe_id)
+            sample_recipe_id = 12345
+            if sample_recipe_id:  # Ensure the recipe_id is valid
+                menu_item = Menu(user_id=user.id, recipe_id=sample_recipe_id)
+                db.session.add(menu_item)
+                db.session.commit()
+            
+            return redirect(url_for('search.ingredient_search'))
+        except IntegrityError as e:
             db.session.rollback()
-            flash('An unexpected error occurred. Please try again.', 'signup')
-            return render_template('signup.html', form=form)
-    else:
-        return render_template('signup.html', form=form)
+            flash('Username already exists. Please choose a different one.', 'danger')
+            form.username.errors.append("Username already exists")
+        except Exception as e:
+            db.session.rollback()
+            flash('An error occurred while creating your account. Please try again.', 'danger')
+            print(f"Error: {e}")
 
+    return render_template('signup.html', form=form)
 
 @auth.route("/logout")
 def logout():
-    if 'user_id' in session:
-        session.pop('user_id')
+    session.clear()
     flash("Goodbye!", 'info')
     return redirect('/')
+

@@ -1,7 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
-from wtforms import PasswordField
-from wtforms.validators import DataRequired, Length
 
 bcrypt = Bcrypt()
 db = SQLAlchemy()
@@ -14,7 +12,7 @@ class User(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), nullable=False, unique=True)
-    password = db.Column(db.String(8), nullable=False)  
+    password = db.Column(db.String(60), nullable=False)  # Increase the length to 60
     displayname = db.Column(db.String(100), nullable=False)
     menu = db.relationship('Menu', backref='user', lazy=True)
 

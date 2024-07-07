@@ -6,13 +6,17 @@ from flask_debugtoolbar import DebugToolbarExtension
 import os
 import requests
 from models import connect_db, db
+from dotenv import load_dotenv
 
 def create_app(config_object='config_module.ConfigClass'):
     app = Flask(__name__)
 
-    # Load environment variables
-    database_uri = os.environ.get('SQLALCHEMY_DATABASE_URI', 'postgresql://localhost/defaultdb')
-    api_key = os.environ.get('API_KEY', 'default_api_key')
+    # Load environment variables from .env file
+    load_dotenv()
+
+    # Get environment variables
+    database_uri = os.environ.get('DATABASE_URI', 'postgresql://localhost/defaultdb')
+    api_key = os.environ.get('SPOONACULAR_API_KEY', 'default_api_key')
     secret_key = os.environ.get('SECRET_KEY', 'dev_secret_key')
 
     app.config['SQLALCHEMY_DATABASE_URI'] = database_uri
@@ -22,6 +26,7 @@ def create_app(config_object='config_module.ConfigClass'):
     app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
     app.config['SESSION_COOKIE_SECURE'] = True
     app.config['REMEMBER_COOKIE_SECURE'] = True
+    app.config['API_KEY'] = api_key  # Store the API key in app config
 
     toolbar = DebugToolbarExtension(app)
     connect_db(app)
@@ -40,13 +45,20 @@ def create_app(config_object='config_module.ConfigClass'):
     def homepage():
         recipe_ids = [795614, 715544, 754183]
         recipe_data = {}
+        api_key = app.config['API_KEY']
 
         for recipe_id in recipe_ids:
             recipe_url = f'https://api.spoonacular.com/recipes/{recipe_id}/information?apiKey={api_key}'
             response = requests.get(recipe_url)
-            recipe_data[recipe_id] = response.json()
+            if response.status_code == 200:
+                recipe_data[recipe_id] = response.json()
+            else:
+                recipe_data[recipe_id] = {'error': f"Failed to fetch recipe {recipe_id}"}
 
-        return render_template('home.html', recipe_data=recipe_data)
+        # Debug: Print the structure of recipe_data
+        print(recipe_data)
+        
+        return render_template('home.html', recipe_data=recipe_data, api_key=api_key)
 
     return app
 

@@ -6,7 +6,13 @@
     <div class="display_recipe">
       <h5>{{ recipe_info['title'] }}</h5>
       <img src="{{ recipe_info['image'] }}" alt="{{ recipe_info['title'] }}" />
-      <a href="/search/details/{{ recipe_info['id'] }}">View Details</a>
+      {% if 'id' in recipe_info %}
+      <a href="{{ url_for('search.results', recipe_id=recipe_info['id']) }}"
+        >View Details</a
+      >
+      {% else %}
+      <p>Error: Recipe ID missing</p>
+      {% endif %}
     </div>
     {% endfor %} {% elif error_message %}
     <p>{{ error_message }}</p>
@@ -15,5 +21,6 @@
     {% endif %}
   </div>
 </div>
+
 <link rel="stylesheet" href="{{ url_for('static', filename='home.css') }}" />
 {% endblock %}

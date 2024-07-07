@@ -1,10 +1,8 @@
-from flask import Blueprint, render_template, session, request, flash, redirect
+from flask import Blueprint, render_template, session, request, flash, redirect, current_app
 import requests
 from models import Menu
 
 search = Blueprint('search', __name__)
-
-API_KEY = '0a6d6c9f43cc45f4a8ac20b49d8d36fd'
 
 @search.route('/search/ingredients', methods=['GET', 'POST'])
 def ingredient_search():
@@ -18,16 +16,17 @@ def ingredient_search():
         
         if ingredients:
             ingredients_str = ','.join(ingredients)
-            api_url = f'https://api.spoonacular.com/recipes/findByIngredients?apiKey={API_KEY}&ingredients={ingredients_str}&number=5&ignorePantry={ignore_pantry}'
+            api_key = current_app.config['API_KEY']
+            api_url = f'https://api.spoonacular.com/recipes/findByIngredients?apiKey={api_key}&ingredients={ingredients_str}&number=5&ignorePantry={ignore_pantry}'
             
             response = requests.get(api_url)
             results = response.json()
             
             filtered_results = [recipe for recipe in results if recipe['title'] not in ['Beverages', 'Smoothies']]
             
-            return render_template('ingredients.html', results=filtered_results)
+            return render_template('search/ingredients.html', results=filtered_results)
     
-    return render_template('ingredients.html')
+    return render_template('search/ingredients.html')
 
 
 @search.route('/search/details/<int:recipe_id>', methods=['GET'])
@@ -37,9 +36,10 @@ def results(recipe_id):
         return redirect('/login')
     
     user_menu_ids = [menu.recipe_id for menu in Menu.query.filter_by(user_id=session['user_id']).all()]
-    image_request = f'https://api.spoonacular.com/recipes/{recipe_id}/information?apiKey={API_KEY}'
-    summary_request = f'https://api.spoonacular.com/recipes/{recipe_id}/summary?apiKey={API_KEY}'
-    instruction_request = f'https://api.spoonacular.com/recipes/{recipe_id}/analyzedInstructions?apiKey={API_KEY}'
+    api_key = current_app.config['API_KEY']
+    image_request = f'https://api.spoonacular.com/recipes/{recipe_id}/information?apiKey={api_key}'
+    summary_request = f'https://api.spoonacular.com/recipes/{recipe_id}/summary?apiKey={api_key}'
+    instruction_request = f'https://api.spoonacular.com/recipes/{recipe_id}/analyzedInstructions?apiKey={api_key}'
 
     sum_response = requests.get(summary_request)
     inst_response = requests.get(instruction_request)
@@ -61,6 +61,6 @@ def results(recipe_id):
                 for equipment in step['equipment']:
                     equipment_set.add(equipment['name'].capitalize())
 
-        return render_template("recipeDetails.html", instructions=instructions, summary=summary, image=image_data, user_menu_ids=user_menu_ids, ingredient_set=ingredient_set, equipment_set=equipment_set)
+        return render_template("search/recipeDetails.html", instructions=instructions, summary=summary, image=image_data, user_menu_ids=user_menu_ids, ingredient_set=ingredient_set, equipment_set=equipment_set)
     else:
         return "Failed to retrieve recipe details", 404

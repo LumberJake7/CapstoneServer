@@ -1,14 +1,10 @@
-# routes/users.py
-
-from flask import Blueprint, render_template, redirect, url_for, session, request, flash, abort
+from flask import Blueprint, render_template, redirect, url_for, session, request, flash, abort, current_app
 from models import User, db, Menu
 from forms import SignupUserForm
 from flask_bcrypt import check_password_hash
 import requests
 
 users = Blueprint('users', __name__)
-
-API_KEY = '0a6d6c9f43cc45f4a8ac20b49d8d36fd'
 
 @users.route('/users/<int:user_id>', methods=['GET'])
 def profile(user_id):
@@ -24,7 +20,8 @@ def profile(user_id):
         recipe_id = menu_item.recipe_id
         if recipe_id:
             try:
-                recipe_url = f'https://api.spoonacular.com/recipes/{recipe_id}/information?apiKey={API_KEY}'
+                api_key = current_app.config['API_KEY']
+                recipe_url = f'https://api.spoonacular.com/recipes/{recipe_id}/information?apiKey={api_key}'
                 response = requests.get(recipe_url)
                 if response.status_code == 200:
                     recipe_info = response.json()
@@ -36,8 +33,7 @@ def profile(user_id):
             except ValueError as e:
                 users.logger.error(f"JSON decoding failed for recipe {recipe_id}: {e}")
     
-    return render_template('profile.html', user=user, recipe_data=recipe_data)
-
+    return render_template('users/profile.html', user=user, recipe_data=recipe_data)
 
 @users.route('/users/<int:user_id>/edit', methods=['GET', 'POST'])
 def edit_profile(user_id):
@@ -70,8 +66,7 @@ def edit_profile(user_id):
             users.logger.error(f"Error updating profile for user {user_id}: {str(e)}")
             return redirect(url_for('users.edit_profile', user_id=user.id))
 
-    return render_template('edit.html', user=user, form=form)
-
+    return render_template('users/edit.html', user=user, form=form)
 
 @users.route('/users/add_to_menu/<int:recipe_id>', methods=['POST'])
 def add_or_remove_from_menu(recipe_id):
