@@ -62,6 +62,7 @@ PySocks==1.7.1
 pytest==8.1.1
 python-dotenv==1.0.1
 pytz==2022.1
+PyYAML==5.4.1
 requests==2.31.0
 SecretStorage==3.3.1
 selenium==4.17.2
