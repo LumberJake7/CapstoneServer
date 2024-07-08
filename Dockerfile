@@ -7,7 +7,7 @@ ENV PYTHONUNBUFFERED 1
 
 # Install system dependencies
 RUN apt-get update \
-    && apt-get install -y build-essential libgirepository1.0-dev
+    && apt-get install -y build-essential libgirepository1.0-dev libcairo2-dev pkg-config python3-dev
 
 # Create and set the working directory
 WORKDIR /app
@@ -29,4 +29,4 @@ ENV FLASK_ENV=production
 EXPOSE 5000
 
 # Run the application
-CMD ["gunicorn", "-b", "0.0.0.0:5000", "run:app"]
+CMD ["gunicorn", "run:app"]
