@@ -8,9 +8,7 @@ bs4==0.0.2
 cached-property==1.5.2
 certifi==2024.2.2
 charset-normalizer==3.3.2
-cliapp==1.20180812.1
 click==8.1.7
-cmdtest==0.32+git
 colorama==0.4.4
 command-not-found==0.3
 coverage==7.4.4
