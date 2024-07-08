@@ -2,7 +2,6 @@ from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_wtf.csrf import CSRFProtect
-from flask_debugtoolbar import DebugToolbarExtension
 import os
 import requests
 from models import connect_db, db
@@ -24,12 +23,10 @@ def create_app(config_object='config_module.ConfigClass'):
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config["SQLALCHEMY_ECHO"] = os.environ.get('SQLALCHEMY_ECHO', 'False').lower() in ['true', '1', 'yes']
     app.config['SECRET_KEY'] = secret_key
-    app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
     app.config['SESSION_COOKIE_SECURE'] = True
     app.config['REMEMBER_COOKIE_SECURE'] = True
     app.config['API_KEY'] = api_key  # Store the API key in app config
 
-    toolbar = DebugToolbarExtension(app)
     connect_db(app)
 
     # Import and register blueprints
