@@ -6,13 +6,14 @@ from flask_debugtoolbar import DebugToolbarExtension
 import os
 import requests
 from models import connect_db, db
-from dotenv import load_dotenv
+
+# Load environment variables from .env if present (mainly for local development)
+if os.path.exists('.env'):
+    from dotenv import load_dotenv
+    load_dotenv()
 
 def create_app(config_object='config_module.ConfigClass'):
     app = Flask(__name__)
-
-    # Load environment variables
-    load_dotenv()
 
     # Get environment variables
     database_uri = os.environ.get('DATABASE_URI', 'postgresql://localhost/defaultdb')
