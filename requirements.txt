@@ -14,7 +14,6 @@ coverage==7.4.4
 cryptography==3.4.8
 dbus-python==1.2.18
 decorator==5.1.1
-distro==1.7.0
 dnspython==2.6.1
 email_validator==2.1.1
 exceptiongroup==1.2.0
@@ -26,7 +25,6 @@ flask-talisman==1.1.0
 Flask-Testing==0.8.1
 Flask-WTF==1.2.1
 greenlet==3.0.3
-gyp==0.1
 h11==0.14.0
 httplib2==0.20.2
 idna==3.6
