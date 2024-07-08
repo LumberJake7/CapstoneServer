@@ -11,12 +11,12 @@ from dotenv import load_dotenv
 def create_app(config_object='config_module.ConfigClass'):
     app = Flask(__name__)
 
-    # Load environment variables from .env file
+    # Load environment variables
     load_dotenv()
 
     # Get environment variables
     database_uri = os.environ.get('DATABASE_URI', 'postgresql://localhost/defaultdb')
-    api_key = os.environ.get('SPOONACULAR_API_KEY', 'default_api_key')
+    api_key = os.environ.get('API_KEY', 'default_api_key')
     secret_key = os.environ.get('SECRET_KEY', 'dev_secret_key')
 
     app.config['SQLALCHEMY_DATABASE_URI'] = database_uri
