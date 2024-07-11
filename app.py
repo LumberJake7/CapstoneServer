@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_wtf.csrf import CSRFProtect
@@ -11,11 +11,13 @@ if os.path.exists('.env'):
     from dotenv import load_dotenv
     load_dotenv()
 
+cached_data = None
+
 def create_app(config_object='config_module.ConfigClass'):
     app = Flask(__name__)
 
     # Get environment variables
-    database_uri = os.environ.get('DATABASE_URI', 'postgresql://localhost/defaultdb')
+    database_uri = os.environ.get('DATABASE_URL', 'postgresql://localhost/defaultdb')
     api_key = os.environ.get('API_KEY', 'default_api_key')
     secret_key = os.environ.get('SECRET_KEY', 'dev_secret_key')
 
@@ -34,29 +36,34 @@ def create_app(config_object='config_module.ConfigClass'):
     app.register_blueprint(auth_blueprint)
 
     from routes.users import users as users_blueprint
-    app.register_blueprint(users_blueprint)
+    app.register_blueprint(users_blueprint, url_prefix='/users')
 
     from routes.search import search as search_blueprint
     app.register_blueprint(search_blueprint)
 
     @app.route('/')
     def homepage():
-        recipe_ids = [795614, 715544, 754183]
-        recipe_data = {}
-        api_key = app.config['API_KEY']
+        return render_template('home.html')
 
-        for recipe_id in recipe_ids:
-            recipe_url = f'https://api.spoonacular.com/recipes/{recipe_id}/information?apiKey={api_key}'
-            response = requests.get(recipe_url)
-            if response.status_code == 200:
-                recipe_data[recipe_id] = response.json()
-            else:
-                recipe_data[recipe_id] = {'error': f"Failed to fetch recipe {recipe_id}"}
+    @app.route('/api/recipes')
+    def get_recipes():
+        global cached_data
+        if cached_data is None:
+            recipe_ids = [795614, 715544, 754183]
+            recipe_data = {}
 
-        # Debug: Print the structure of recipe_data
-        print(recipe_data)
+            api_key = app.config['API_KEY']
+            for recipe_id in recipe_ids:
+                recipe_url = f'https://api.spoonacular.com/recipes/{recipe_id}/information?apiKey={api_key}'
+                response = requests.get(recipe_url)
+                if response.status_code == 200:
+                    recipe_data[recipe_id] = response.json()
+                else:
+                    recipe_data[recipe_id] = {'error': f"Failed to fetch recipe {recipe_id}"}
+
+            cached_data = recipe_data
         
-        return render_template('home.html', recipe_data=recipe_data, api_key=api_key)
+        return jsonify(cached_data)
 
     return app
 

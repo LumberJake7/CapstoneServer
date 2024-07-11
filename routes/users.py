@@ -1,12 +1,15 @@
-from flask import Blueprint, render_template, redirect, url_for, session, request, flash, abort, current_app
+from flask import Blueprint, render_template, redirect, url_for, session, request, flash, abort
 from models import User, db, Menu
 from forms import SignupUserForm
 from flask_bcrypt import check_password_hash
+import os
 import requests
 
-users = Blueprint('users', __name__)
+users = Blueprint('users', __name__, template_folder='templates/users')
 
-@users.route('/users/<int:user_id>', methods=['GET'])
+API_KEY = os.environ.get('API_KEY', 'default_api_key')
+
+@users.route('/<int:user_id>', methods=['GET'])
 def profile(user_id):
     if 'user_id' not in session or session['user_id'] != user_id:
         flash("You are not authorized to view this profile.", "danger")
@@ -20,8 +23,7 @@ def profile(user_id):
         recipe_id = menu_item.recipe_id
         if recipe_id:
             try:
-                api_key = current_app.config['API_KEY']
-                recipe_url = f'https://api.spoonacular.com/recipes/{recipe_id}/information?apiKey={api_key}'
+                recipe_url = f'https://api.spoonacular.com/recipes/{recipe_id}/information?apiKey={API_KEY}'
                 response = requests.get(recipe_url)
                 if response.status_code == 200:
                     recipe_info = response.json()
@@ -33,9 +35,10 @@ def profile(user_id):
             except ValueError as e:
                 users.logger.error(f"JSON decoding failed for recipe {recipe_id}: {e}")
     
-    return render_template('users/profile.html', user=user, recipe_data=recipe_data)
+    return render_template('profile.html', user=user, recipe_data=recipe_data)
 
-@users.route('/users/<int:user_id>/edit', methods=['GET', 'POST'])
+
+@users.route('/<int:user_id>/edit', methods=['GET', 'POST'])
 def edit_profile(user_id):
     if 'user_id' not in session or session['user_id'] != user_id:
         flash("You are not authorized to edit this profile.", "danger")
@@ -68,7 +71,8 @@ def edit_profile(user_id):
 
     return render_template('users/edit.html', user=user, form=form)
 
-@users.route('/users/add_to_menu/<int:recipe_id>', methods=['POST'])
+
+@users.route('/add_to_menu/<int:recipe_id>', methods=['POST'])
 def add_or_remove_from_menu(recipe_id):
     if 'user_id' not in session:
         abort(401)  # Unauthorized
