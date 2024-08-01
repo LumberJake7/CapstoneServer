@@ -5,13 +5,16 @@ from flask_migrate import Migrate  # Import Migrate
 import os
 import requests
 from models import connect_db, db, User
+from dotenv import load_dotenv
 
 # Global variable to cache recipe data
 cached_data = None
 
 def create_app(config_object='config_module.ConfigClass'):
-    app = Flask(__name__)
+    load_dotenv() 
     
+    app = Flask(__name__)
+
     # Configuration settings
     app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URI')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
