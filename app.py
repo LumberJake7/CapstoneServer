@@ -1,7 +1,6 @@
 from flask import Flask, render_template, jsonify, session, redirect, url_for, flash, current_app
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
-from flask_debugtoolbar import DebugToolbarExtension
 from flask_migrate import Migrate
 import os
 import requests
@@ -22,12 +21,10 @@ def create_app(config_object='config_module.ConfigClass'):
     app.config["SQLALCHEMY_ECHO"] = os.getenv('SQLALCHEMY_ECHO', 'False') == 'True'
     app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev_secret_key')
     app.config['API_KEY'] = os.getenv('API_KEY')  # Ensure API_KEY is loaded
-    app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
     app.config['SESSION_COOKIE_SECURE'] = True
     app.config['REMEMBER_COOKIE_SECURE'] = True
 
     # Extensions
-    toolbar = DebugToolbarExtension(app)
     bcrypt = Bcrypt(app)
     migrate = Migrate(app, db)
 
@@ -84,4 +81,4 @@ if __name__ == '__main__':
     with app.app_context():
         db.drop_all()
         db.create_all()
-    app.run(debug=True)
+    app.run(debug=False)
