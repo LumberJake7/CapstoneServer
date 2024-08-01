@@ -25,7 +25,7 @@ def create_app(config_object='config_module.ConfigClass'):
 
     # Extensions
     bcrypt = Bcrypt(app)
-    migrate = Migrate(app, db)
+  
 
     # Connect database
     connect_db(app)
