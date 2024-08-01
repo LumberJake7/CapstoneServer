@@ -3,20 +3,45 @@
 <div class="row justify-content-md-center">
   <div class="col-md-4">
     <h2 class="join-message">Edit Your Profile.</h2>
+    {% with messages = get_flashed_messages(with_categories=true) %} {% if
+    messages %}
+    <div class="container">
+      {% for category, message in messages %}
+      <div class="alert alert-{{ category }} mt-4">{{ message }}</div>
+      {% endfor %}
+    </div>
+    {% endif %} {% endwith %}
     <form method="POST" id="user_form">
-      {{ form.hidden_tag() }} {% for field in form if field.widget.input_type !=
-      'hidden' and field.name != 'password' %} {% for error in field.errors %}
-      <span class="text-danger">{{ error }}</span>
-      {% endfor %} {{ field(placeholder=field.label.text, class="form-control",
-      value=user[field.name]) }} {% endfor %}
+      {{ form.hidden_tag() }}
 
-      <p>To confirm changes, enter your password:</p>
-      {% if form.password.errors %} {% for error in form.password.errors %}
-      <span class="text-danger"> {{ error }} </span>
-      {% endfor %} {% endif %} {{ form.password(placeholder="Enter your password
-      to confirm", class="form-control") }}
+      <div class="form-group">
+        {{ form.username.label }} {{
+        form.username(placeholder=form.username.label.text,
+        class="form-control", value=user.username) }} {% for error in
+        form.username.errors %}
+        <span class="text-danger">{{ error }}</span>
+        {% endfor %}
+      </div>
+
+      <div class="form-group">
+        {{ form.displayname.label }} {{
+        form.displayname(placeholder=form.displayname.label.text,
+        class="form-control", value=user.displayname) }} {% for error in
+        form.displayname.errors %}
+        <span class="text-danger">{{ error }}</span>
+        {% endfor %}
+      </div>
+
+      <div class="form-group">
+        {{ form.password.label }} {{ form.password(placeholder="Enter your
+        password to confirm", class="form-control") }} {% for error in
+        form.password.errors %}
+        <span class="text-danger">{{ error }}</span>
+        {% endfor %}
+      </div>
+
       <div class="edit-btn-area">
-        <button class="btn btn-success">Edit this user!</button>
+        <button type="submit" class="btn btn-success">Edit this user!</button>
         <a href="/users/{{ user.id }}" class="btn btn-outline-secondary"
           >Cancel</a
         >
