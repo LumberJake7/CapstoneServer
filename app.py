@@ -1,6 +1,7 @@
 from flask import Flask, render_template, jsonify, session, redirect, url_for, flash, current_app
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
+from flask_migrate import Migrate  # Import Migrate
 import os
 import requests
 from models import connect_db, db, User
@@ -9,8 +10,6 @@ from models import connect_db, db, User
 cached_data = None
 
 def create_app(config_object='config_module.ConfigClass'):
-
-
     app = Flask(__name__)
     
     # Configuration settings
@@ -24,10 +23,12 @@ def create_app(config_object='config_module.ConfigClass'):
 
     # Extensions
     bcrypt = Bcrypt(app)
-  
-
+    
     # Connect database
     connect_db(app)
+    
+    # Initialize migration
+    migrate = Migrate(app, db)
 
     # Register blueprints
     from routes.auth import auth as auth_blueprint
@@ -63,7 +64,6 @@ def create_app(config_object='config_module.ConfigClass'):
             cached_data = recipe_data
         
         return jsonify(cached_data)
-
 
     @app.context_processor
     def inject_user():
