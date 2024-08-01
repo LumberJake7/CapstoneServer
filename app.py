@@ -3,23 +3,22 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 import os
 import requests
-from dotenv import load_dotenv
 from models import connect_db, db, User
 
 # Global variable to cache recipe data
 cached_data = None
 
 def create_app(config_object='config_module.ConfigClass'):
-    load_dotenv()  # Load environment variables from .env file
+
 
     app = Flask(__name__)
     
     # Configuration settings
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URI')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config["SQLALCHEMY_ECHO"] = os.getenv('SQLALCHEMY_ECHO', 'False') == 'True'
-    app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev_secret_key')
-    app.config['API_KEY'] = os.getenv('API_KEY')  # Ensure API_KEY is loaded
+    app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+    app.config['API_KEY'] = os.getenv('API_KEY') 
     app.config['SESSION_COOKIE_SECURE'] = True
     app.config['REMEMBER_COOKIE_SECURE'] = True
 
