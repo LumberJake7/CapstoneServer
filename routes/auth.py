@@ -1,13 +1,13 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, session
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityError, DataError
 from models import User, db, Menu
-from forms import LoginUserForm, SignupUserForm
+from forms import LoginForm, SignupForm
 
 auth = Blueprint('auth', __name__)
 
 @auth.route("/login", methods=["GET", "POST"])
 def login():
-    form = LoginUserForm()
+    form = LoginForm()
 
     if form.validate_on_submit():
         username = form.username.data
@@ -15,25 +15,32 @@ def login():
         return_user = User.authenticate(username, password)
         
         if return_user:
-            flash(f"Hello, you're back {return_user.displayname}", 'success')
+            flash(f"Hello, welcome back {return_user.displayname}!", 'success')
             session['user_id'] = return_user.id
             session['displayname'] = return_user.displayname
             return redirect('/')
         else:
+            flash("Invalid username or password.", 'danger')
             form.username.errors.clear()
             form.password.errors.clear()
             form.username.errors.append("Invalid username/password")
 
     return render_template("login.html", form=form)
 
+
 @auth.route('/signup', methods=['GET', 'POST'])
 def sign_up():
-    form = SignupUserForm()
+    form = SignupForm()
 
     if form.validate_on_submit():
         username = form.username.data
         displayname = form.displayname.data
         password = form.password.data
+
+        # Check the length of the password before hashing
+        if len(password) > 20:
+            flash('Password is too long. Please enter a password that is 20 characters or fewer.', 'danger')
+            return render_template('signup.html', form=form)
 
         user = User.register(username, displayname, password)
         db.session.add(user)
@@ -50,7 +57,7 @@ def sign_up():
                 db.session.commit()
             
             return redirect(url_for('search.ingredient_search'))
-        except IntegrityError as e:
+        except IntegrityError:
             db.session.rollback()
             flash('Username already exists. Please choose a different one.', 'danger')
             form.username.errors.append("Username already exists")
@@ -58,6 +65,12 @@ def sign_up():
             db.session.rollback()
             flash('An error occurred while creating your account. Please try again.', 'danger')
             print(f"Error: {e}")
+    else:
+        # Display validation errors
+        if form.errors:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    flash(f"Error in the {getattr(form, field).label.text} field - {error}", 'danger')
 
     return render_template('signup.html', form=form)
 
@@ -66,4 +79,3 @@ def logout():
     session.clear()
     flash("Goodbye!", 'info')
     return redirect('/')
-

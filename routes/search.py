@@ -4,11 +4,11 @@ from models import Menu
 
 search = Blueprint('search', __name__)
 
-@search.route('/search/ingredients', methods=['GET', 'POST'])
+@search.route('/ingredients', methods=['GET', 'POST'])
 def ingredient_search():
     if 'user_id' not in session:
         flash("You must login or create an account to see this page")
-        return redirect('/login')
+        return redirect('/auth/login')
     
     if request.method == 'POST':
         ingredients = [ingredient for ingredient in request.form.getlist('ingredients[]') if ingredient.strip()]
@@ -24,16 +24,15 @@ def ingredient_search():
             
             filtered_results = [recipe for recipe in results if recipe['title'] not in ['Beverages', 'Smoothies']]
             
-            return render_template('search/ingredients.html', results=filtered_results)
+            return render_template('ingredients.html', results=filtered_results)
     
-    return render_template('search/ingredients.html')
+    return render_template('ingredients.html', results=[])
 
-
-@search.route('/search/details/<int:recipe_id>', methods=['GET'])
+@search.route('/details/<int:recipe_id>', methods=['GET'])
 def results(recipe_id):
     if 'user_id' not in session:
         flash("You must login or create an account to see this page")
-        return redirect('/login')
+        return redirect('/auth/login')
     
     user_menu_ids = [menu.recipe_id for menu in Menu.query.filter_by(user_id=session['user_id']).all()]
     api_key = current_app.config['API_KEY']
@@ -61,6 +60,6 @@ def results(recipe_id):
                 for equipment in step['equipment']:
                     equipment_set.add(equipment['name'].capitalize())
 
-        return render_template("search/recipeDetails.html", instructions=instructions, summary=summary, image=image_data, user_menu_ids=user_menu_ids, ingredient_set=ingredient_set, equipment_set=equipment_set)
+        return render_template('recipeDetails.html', instructions=instructions, summary=summary, image=image_data, user_menu_ids=user_menu_ids, ingredient_set=ingredient_set, equipment_set=equipment_set)
     else:
         return "Failed to retrieve recipe details", 404

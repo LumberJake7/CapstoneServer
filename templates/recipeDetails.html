@@ -22,7 +22,9 @@
     </form>
   </div>
 </div>
+
 <div class="row mt-5">
+  <!-- Add margin top to the row -->
   <div class="col-md-3">
     <div class="ingredient-lists">
       <div class="ingredient-list">
@@ -44,14 +46,16 @@
       </div>
     </div>
   </div>
+
   <div class="col-md-9 mt-md-0 mt-3">
+    <!-- Add margin top to the column on medium and extra small devices -->
     <div id="steps-list">
       <ul class="steps">
         {% for instruction in instructions %} {% for step in instruction.steps
         %}
         <li>
-          <strong class="step-number">Step {{ step.number }}:</strong> {{
-          step.step }}
+          <strong class="step-number">Step {{ step.number }}:</strong>
+          {{ step.step }}
         </li>
         {% endfor %} {% endfor %}
       </ul>
@@ -59,5 +63,6 @@
   </div>
 </div>
 <br /><br /><br />
+
 <link rel="stylesheet" href="{{ url_for('static', filename='details.css') }}" />
 {% endblock %}

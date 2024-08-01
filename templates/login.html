@@ -1,17 +1,46 @@
 {% extends 'base.html' %} {% block content %}
-<h1>Login to access your menu, and see details of recipes</h1>
-<br /><br />
-<form method="POST">
-  {{ form.hidden_tag() }} {% for field in form if field.widget.input_type !=
-  'hidden' %}
-  <div class="form-group">
-    {{ field.label }} {{ field(class_="form-control", style="width: 300px;") }}
-    {% for error in field.errors %}
-    <span class="form-text text-danger">{{ error }}</span>
-    {% endfor %}
-  </div>
+<div class="login-form">
+  <form method="POST" action="{{ url_for('auth.login') }}">
+    {{ form.hidden_tag() }}
+
+    <div class="form-group row">
+      <label for="username" class="col-sm-2 col-form-label"
+        >{{ form.username.label.text }}</label
+      >
+      <div class="col-sm-4">
+        {{ form.username(class="form-control", id="username") }}
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <label for="password" class="col-sm-2 col-form-label"
+        >{{ form.password.label.text }}</label
+      >
+      <div class="col-sm-4">
+        {{ form.password(class="form-control", id="password") }}
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <div class="col-sm-4 offset-sm-2">
+        {{ form.remember_me(class="form-check-input", id="remember_me") }} {{
+        form.remember_me.label(class="form-check-label", for="remember_me") }}
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <div class="col-sm-10 offset-sm-2">
+        {{ form.submit(class="btn btn-primary") }}
+      </div>
+    </div>
+  </form>
+</div>
+
+{% with messages = get_flashed_messages(with_categories=true) %} {% if messages
+%}
+<div class="container">
+  {% for category, message in messages %}
+  <div class="alert alert-{{ category }} mt-4">{{ message }}</div>
   {% endfor %}
-  <button class="btn btn-success" type="submit">Login</button>
-</form>
-<link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}" />
-{% endblock %}
+</div>
+{% endif %} {% endwith %} {% endblock %}

@@ -1,14 +1,22 @@
-# forms.py
-
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField
-from wtforms.validators import InputRequired, Length
+from wtforms import StringField, PasswordField, BooleanField, FieldList, FormField, SubmitField
+from wtforms.validators import DataRequired, Length, EqualTo
 
-class LoginUserForm(FlaskForm):
-    username = StringField("Username", validators=[InputRequired()])
-    password = PasswordField("Password", validators=[InputRequired()])
+class LoginForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired(), Length(min=4, max=25)])
+    password = PasswordField('Password', validators=[DataRequired(), Length(min=8, max=20)])
+    remember_me = BooleanField('Remember Me')
+    submit = SubmitField('Login')
 
-class SignupUserForm(FlaskForm):
-    username = StringField("Username", validators=[InputRequired()])
-    displayname = StringField("Display Name", validators=[InputRequired()])
-    password = PasswordField("Password", validators=[InputRequired(), Length(min=8, max=128, message='Password must be between 8 and 128 characters long')])
+class SignupForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired(), Length(max=50)])
+    displayname = StringField('Display Name', validators=[DataRequired(), Length(max=100)])
+    password = PasswordField('Password', validators=[DataRequired(), Length(min=8, max=20)])
+    confirm = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password', message='Passwords must match.')])
+    submit = SubmitField('Sign Up')
+
+class EditProfileForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired(), Length(max=50)])
+    displayname = StringField('Display Name', validators=[DataRequired(), Length(max=100)])
+    password = PasswordField('Password', validators=[DataRequired()])
+    submit = SubmitField('Edit this user!')
